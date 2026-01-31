@@ -107,14 +107,16 @@ function setCors(res) {
 function sendJson(res, status, body) {
   setCors(res);
   res.setHeader("Content-Type", "application/json");
-  res.status(status).end(JSON.stringify(body));
+  res.statusCode = status;
+  res.end(JSON.stringify(body));
 }
 
 module.exports = async function handler(req, res) {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     setCors(res);
-    return res.status(204).end();
+    res.statusCode = 204;
+    return res.end();
   }
 
   if (req.method !== "POST") {
