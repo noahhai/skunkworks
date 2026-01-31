@@ -186,7 +186,7 @@ module.exports = async function handler(req, res) {
 
     return sendJson(res, 200, { delete: deleteList });
   } catch (err) {
-    console.error("Gemini API error:", err);
+    console.info("Gemini API error:", err);
     return sendJson(res, 502, {
       error: "AI classification failed",
       detail: err.message,
