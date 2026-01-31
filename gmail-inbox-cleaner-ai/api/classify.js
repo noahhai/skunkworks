@@ -125,7 +125,15 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 500, { error: "GEMINI_API_KEY not configured" });
   }
 
-  const body = req.body || {};
+  // Parse body — handle both pre-parsed object and raw string
+  let body = req.body || {};
+  if (typeof body === "string") {
+    try {
+      body = JSON.parse(body);
+    } catch (_) {
+      return sendJson(res, 400, { error: "Invalid JSON body" });
+    }
+  }
   const senders = body.senders;
 
   if (!Array.isArray(senders) || senders.length === 0) {
