@@ -98,27 +98,41 @@ async function classifyBatch(model, senders) {
   return parseGeminiResponse(text);
 }
 
+function setCors(res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+}
+
+function sendJson(res, status, body) {
+  setCors(res);
+  res.setHeader("Content-Type", "application/json");
+  res.status(status).end(JSON.stringify(body));
+}
+
 module.exports = async function handler(req, res) {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
+    setCors(res);
     return res.status(204).end();
   }
 
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return sendJson(res, 405, { error: "Method not allowed" });
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: "GEMINI_API_KEY not configured" });
+    return sendJson(res, 500, { error: "GEMINI_API_KEY not configured" });
   }
 
-  const { senders } = req.body || {};
+  const body = req.body || {};
+  const senders = body.senders;
 
   if (!Array.isArray(senders) || senders.length === 0) {
-    return res
-      .status(400)
-      .json({ error: "Request body must contain a non-empty 'senders' array" });
+    return sendJson(res, 400, {
+      error: "Request body must contain a non-empty 'senders' array",
+    });
   }
 
   // Validate sender objects
@@ -126,9 +140,9 @@ module.exports = async function handler(req, res) {
     (s) => s && typeof s.email === "string" && s.email.includes("@")
   );
   if (validSenders.length === 0) {
-    return res
-      .status(400)
-      .json({ error: "No valid sender objects found in array" });
+    return sendJson(res, 400, {
+      error: "No valid sender objects found in array",
+    });
   }
 
   try {
@@ -171,11 +185,12 @@ module.exports = async function handler(req, res) {
       (e) => emailCaseMap.get(e) || e
     );
 
-    return res.status(200).json({ delete: deleteList });
+    return sendJson(res, 200, { delete: deleteList });
   } catch (err) {
     console.error("Gemini API error:", err);
-    return res
-      .status(502)
-      .json({ error: "AI classification failed", detail: err.message });
+    return sendJson(res, 502, {
+      error: "AI classification failed",
+      detail: err.message,
+    });
   }
 };
