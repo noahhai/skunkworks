@@ -90,10 +90,7 @@ function parseGeminiResponse(text) {
 }
 
 async function classifyBatch(model, senders) {
-  const result = await model.generateContent([
-    { role: "user", parts: [{ text: buildUserPrompt(senders) }] },
-  ]);
-
+  const result = await model.generateContent(buildUserPrompt(senders));
   const text = result.response.text();
   return parseGeminiResponse(text);
 }
