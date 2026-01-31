@@ -1,0 +1,11 @@
+{
+  "name": "gmail-inbox-cleaner-ai",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0"
+  }
+}
