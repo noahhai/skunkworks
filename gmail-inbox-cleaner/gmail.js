@@ -1274,7 +1274,7 @@ function getHtmlUi() {
     let descriptionCollapsed = false;
     
     // AI classification endpoint (Vercel-deployed Gemini API)
-    const AI_ENDPOINT = 'https://gmail-inbox-cleaner-ai.vercel.app/api/classify';
+    const AI_ENDPOINT = 'https://skunkworks-two.vercel.app/api/classify';
     
     function log(msg, type = '') {
       const logEl = document.getElementById('log');
